@@ -32,14 +32,50 @@ design parking lot
 
 # entities 
 1. Parking lot  
+    - list of floors
+    - ticket service
+    - map of vehcile type to spot (free spot count)
+
 2. vechile 
+  - id 
+  - vechile type
 3. vechile type enum
 4. parking spot 
+    - state 
+    - type
+    - vechile 
+    - lock
 4. parking spot state enum
 5. ticket 
+   - id 
+   - entry time
+   - vechile
+   - ticket status
+   - parking spot 
+   - exit time 
 6. gates interface 
 7. entry gate , exit gate (since diff behaviour)
+    - id 
+    - type 
+    - entry gate 
+        - assignspot()
+        - createticket()
+    - exit gate 
+        - free spot()
+        - close ticket() and process payment()
 8. payment processor 
+    - payment startegy
+    - pay()
 9. parking floor 
-10. Ticket status 
+    - list of parking spots
+10. Ticket status enum
+
 11. Parking startegy
+    - findspot(vechile , gate)
+    - closest parking 
+    - cheapest parking
+
+12. ticket service 
+   - create ticket()
+   - close ticket()
+   - calculate fee()
