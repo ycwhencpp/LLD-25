@@ -61,3 +61,5 @@ build a 2 player connect 4 game , player take turns dropping discs into 7 column
     - int id
 
 # Implementation 
+ - define the core logic 
+ - consider edge cases 
