@@ -77,8 +77,8 @@ class HitCounter2{
 
     public void hit(int timestamp){
         int index = timestamp % bucketLen;
-
-        synchronized (locks[index]) {
+        locks[index].lock();
+        try {
             int time = hitData[index][1];
 
             if(time != timestamp){
@@ -86,17 +86,22 @@ class HitCounter2{
             }
             hitData[index][0]++;
             hitData[index][1] = timestamp;
+        } finally {
+            locks[index].unlock();
         }
     }
 
     public int getHits(int timestamp){
         int totalHit = 0;
         for(int i=0; i<bucketLen; i++){
-            synchronized (locks[i]) {
+            locks[i].lock();
+            try {
                 int time = hitData[i][1];
                 if(timestamp - time < bucketLen){
                     totalHit+=hitData[i][0];
                 }
+            } finally {
+                locks[i].unlock();
             }
         }
         return totalHit;
