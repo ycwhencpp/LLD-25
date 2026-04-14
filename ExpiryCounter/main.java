@@ -82,7 +82,7 @@ class ExpiryCounter2{
         int index = second % expiryTime;
         int[][] arr = map.get(k);
         // 1 2 3 4 5 
-        if(arr[index][0] != expiryTime){
+        if(arr[index][0] != second){
             arr[index][1] = 0;
         }
         arr[index][0] = second;
