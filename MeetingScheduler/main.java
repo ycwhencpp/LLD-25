@@ -221,12 +221,10 @@ class AuditLogService{
 
     private void purgeOldLogs(){
         int today = 5; // now
+        int cutOffDay = today -retentionDays;
+        Booking cutOffDumy = new Booking(null, cutOffDay);
         for(TreeSet<Booking> bookings : history.values()){
-            for(Booking booking : bookings){
-                if(booking.scheduledOn + retentionDays >= today){
-                    bookings.remove(booking);
-                }
-            }
+            bookings.headSet(cutOffDumy).clear();
             
         }   
     }
