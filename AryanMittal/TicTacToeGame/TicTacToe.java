@@ -54,17 +54,18 @@ class  TicTacToeGame implements Game{
 
     public void startGame(){
         this.gameState = GameState.IN_PROGRESS;
+        gameBoard.printBoard();
         while(this.gameState != GameState.COMPLETED){
             Player player = getCurrentPlayer();
             Cell cell = player.makeMove();
             Symbol playerSymbol = player.getSymbol();
 
-            boolean success = gameBoard.placeMove(cell, );
+            boolean success = gameBoard.placeMove(cell, playerSymbol);
 
             if(!success) continue;
 
             GameState currentGameState = gameBoard.checkGameState(cell, playerSymbol);
-
+            gameBoard.printBoard();
             if(currentGameState == GameState.COMPLETED){
                 Symbol winner = this.gameBoard.getWinner();
                 this.gameState = currentGameState;
@@ -115,7 +116,9 @@ class GameBoard {
         return row<0 || col <0 || row >= grid.length || col >= grid[0].length || grid[row][col] != null;
     }
 
-    private GameState checkGameState(Cell cell, Symbol symbol){
+    
+
+    public GameState checkGameState(Cell cell, Symbol symbol){
         
         GameState gameState = checkWinState(cell, symbol);
         if(gameState == GameState.COMPLETED){
@@ -178,6 +181,18 @@ class GameBoard {
 
         return GameState.IN_PROGRESS; 
 
+    }
+    public void printBoard(){
+        for(int i=0; i<grid.length; i++){
+            for(int j=0; j<grid[0].length; j++){
+                if(grid[i][j] == null){
+                    System.out.print( "_ ");
+                } else {
+                    System.out.print(grid[i][j] + " ");
+                }
+            }
+            System.out.println();
+        }
     }
     private GameState announceWinner(Symbol symbol){
         this.winner = symbol;
