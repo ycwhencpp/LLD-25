@@ -57,12 +57,13 @@ class  TicTacToeGame implements Game{
         while(this.gameState != GameState.COMPLETED){
             Player player = getCurrentPlayer();
             Cell cell = player.makeMove();
+            Symbol playerSymbol = player.getSymbol();
 
-            boolean success = gameBoard.placeMove(cell, player.getSymbol());
+            boolean success = gameBoard.placeMove(cell, );
 
             if(!success) continue;
 
-            GameState currentGameState = gameBoard.checkGameState(cell, symbol);
+            GameState currentGameState = gameBoard.checkGameState(cell, playerSymbol);
 
             if(currentGameState == GameState.COMPLETED){
                 Symbol winner = this.gameBoard.getWinner();
@@ -72,8 +73,8 @@ class  TicTacToeGame implements Game{
                     System.out.println("GAME DRAWN !!!");
                 } else {
                     System.out.println("Player " + winner + " Won");
-                    break;
                 }
+                break;
             }
 
             changePlayer();
