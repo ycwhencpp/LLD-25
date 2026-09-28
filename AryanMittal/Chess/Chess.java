@@ -116,7 +116,9 @@ class Board {
          * if ending cell is one of those possiblites return true else false 
          * also check starting cell contains peicecolor of current player only 
          */
-        return true;
+        Peice peice= move.getMovedPeice();
+        return peice.isValidMove(move);
+
     }
 
     public void createAndAssignPeices(){
@@ -288,6 +290,10 @@ class Move {
     }
     public Cell getEndCell(){
         return this.endCell;
+    }
+
+    public Peice getMovedPeice(){
+        return this.peiceMoved;
     }
 }
 
