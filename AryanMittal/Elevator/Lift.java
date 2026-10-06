@@ -4,14 +4,54 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Lift {
 
-	public static void main(String[] args) {
-		
-	}
+    public static void main(String[] args) {
+        // 1. Initialize the Arena (Floors 0 to 10)
+        List<Floor> floors = new ArrayList<>();
+        for (int i = 0; i <= 10; i++) {
+            floors.add(new Floor(i));
+        }
 
+        // 2. Initialize Strategies
+        ElevatorRoutingStartegy routingStrategy = new FIFO();
+        ElevatorSchedulingStrategy schedulingStrategy = new ClosesetElevatorSchedulingStrategy();
 
-    
+        // 3. Initialize Actors (Elevator 1 at Ground Floor, Elevator 2 at Floor 5)
+        Elevator e1 = new Elevator(1, routingStrategy, Direction.IDLE, floors.get(0));
+        Elevator e2 = new Elevator(2, routingStrategy, Direction.IDLE, floors.get(5));
+        List<Elevator> elevators = Arrays.asList(e1, e2);
+
+        // 4. Initialize Orchestrators
+        ElevatorController controller = new ElevatorController(elevators, schedulingStrategy);
+        Building building = new Building(floors, controller);
+
+        // ==========================================
+        // SIMULATION
+        // ==========================================
+        System.out.println("--- System Initialized ---");
+        System.out.println("Elevator 1 is at Floor: " + e1.getElevatorContext().getFloor().getId());
+        System.out.println("Elevator 2 is at Floor: " + e2.getElevatorContext().getFloor().getId());
+
+        // Event: Someone on Floor 3 presses the UP button
+        System.out.println("\n[EVENT] User on Floor 3 calls the elevator...");
+        ExternalRequest request = new ExternalRequest(floors.get(3), Direction.UP);
+        building.callElevator(request);
+
+        // Verify the Dispatch Strategy worked (Elevator 2 should get it because |5-3|=2 vs |0-3|=3)
+        System.out.println("Elevator 1 pending requests: " + e1.getElevatorContext().getInternalRequest().size());
+        System.out.println("Elevator 2 pending requests: " + e2.getElevatorContext().getInternalRequest().size());
+
+        // Event: The Elevator processes its queue
+        System.out.println("\n[EVENT] Elevator 2 routing strategy triggers step...");
+        Floor arrivedFloor = e2.nextFloor();
+        
+        System.out.println("Elevator 2 arrived at Floor: " + arrivedFloor.getId());
+        System.out.println("Elevator 2 is now: " + e2.getElevatorContext().getElevatoState());
+    }
 }
 
 class Building {
@@ -87,14 +127,19 @@ class Elevator{
 
 
 	public Elevator(int id, ElevatorRoutingStartegy elevatorRoutingStartegy, Direction direction, Floor floor) {
-		this.id = id;
-		this.elevatorRoutingStartegy = elevatorRoutingStartegy;
-	}
+        this.id = id;
+        this.elevatorRoutingStartegy = elevatorRoutingStartegy;
+        
+        this.elevatorContext = new ElevatorContext(floor);
+        this.elevatorContext.setDirection(direction);
+        this.elevatorContext.setElevatoState(ElevatorState.IDLE);
+    }
 
 
-    public void nextFloor(){
+    public Floor nextFloor(){
 		Floor floor = this.elevatorRoutingStartegy.nextFloor(this.elevatorContext);
 		this.elevatorContext.setFloor(floor);
+		return floor;
     }
 
 	public void acceptExternalRequest(InternalRequest request){
@@ -138,6 +183,7 @@ class FIFO implements  ElevatorRoutingStartegy{
         Queue<InternalRequest> requests = elevatorContext.getInternalRequest();
         if(requests.isEmpty()) {
             elevatorContext.setDirection(Direction.IDLE);
+			elevatorContext.setElevatoState(ElevatorState.IDLE);
             return floor;
         }
 
@@ -146,6 +192,7 @@ class FIFO implements  ElevatorRoutingStartegy{
 
         if(targetFloor == floor){
             elevatorContext.setDirection(Direction.IDLE);
+			elevatorContext.setElevatoState(ElevatorState.IDLE);
             return floor;
         }
 
@@ -154,6 +201,7 @@ class FIFO implements  ElevatorRoutingStartegy{
         } else {
             elevatorContext.setDirection(Direction.DOWN);
         }
+		elevatorContext.setElevatoState(ElevatorState.MOVING);
         return targetFloor;
 
     }
