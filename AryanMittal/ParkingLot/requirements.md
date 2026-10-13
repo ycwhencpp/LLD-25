@@ -66,7 +66,6 @@ ParkingFeeCalculator
     - List<ExitGate> exit
     - TicketBuilder 
 
-    + generateTicket()
     + getFloors()
     + getGate(Entry/Exit) 
     + updateTicket()
